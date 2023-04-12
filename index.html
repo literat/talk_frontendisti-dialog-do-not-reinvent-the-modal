@@ -1,40 +1,403 @@
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+    <title>Creating a Design System from Scratch: Lessons learned</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/white.css">
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    <style>
+      :root {
+        --r-link-color: #0fbdcd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-markdown>
+          <textarea data-template>
+            <img src="static/frontendisti.jpg" width="150" />
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+            ## Dialog Element - Don't reinvent the wheel with modals!
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+            [Tomas Litera](https://literat.dev)
+
+            <img src="static/lmc-logo.png" width="150" />
+
+            <aside class="notes">
+              - pozdravit
+              - představit se
+            </aside>
+
+            ---
+
+            <img src="static/twitter-modal.png" />
+
+            <aside class="notes">
+              - než začnu, tak chci celou tuhle přednášku uvést do správného kontextu
+              - takže nejprve něco o mě
+            </aside>
+
+            ---
+
+            <img src="static/html-do-that.png" />
+
+            <a href="https://www.youtube.com/watch?v=rM1emdWTr5Q">https://www.youtube.com/watch?v=rM1emdWTr5Q</a>
+
+            <aside class="notes">
+              - začínal jsem s PHP a javascriptem
+              - pracoval jsem s AWS a Serverless
+              - hrál jsem s Node.js a Reactem
+              - a teď vytvářím design systém, o kterém jsem ještě minulý rok nic nevěděl
+              - takže se tak trochu považuji za fullstackáře
+            </aside>
+
+            ---
+
+            ### 🫀 Anatomy
+
+            <img src="static/modal-anatomy.png" />
+
+            <aside class="notes">
+              - teď už trochu víc k tématu
+              - to, o čem tu budu mluvit není jenom moje práce
+              - je to práce celého týmu lidí
+              - možná některé poznáváte ;-)
+            </aside>
+
+            ---
+
+            ### Dialog
+
+            <pre class="r-stretch">
+              <code data-line-numbers="2,7">
+                <dialog open>
+                  <p>Greetings, one and all!</p>
+                  <form method="dialog">
+                    <button>OK</button>
+                  </form>
+                </dialog>
+              </code>
+            </pre>
+
+            ---
+
+            <img src="static/nonmodal-dialog.png" />
+
+            ---
+
+            ### Non-modal Dialog
+
+            <img src="static/gmail-non-modal.png" />
+
+            <aside class="notes">
+              - taky bych chtěl zmínit na úvod pár technikálií
+              - celý design system vytváříme jako open source
+              - a za pomoci aktuálního stacku technologií
+              - jako třeba Nx + Lerna (ano, máme monorepo)
+              - typescript + react
+              - php + twig (jo, máme komponenty pro PHP, ale o tom později)
+            </aside>
+
+            ---
+
+            ## Modal Dialog
+
+            <img src="static/modal-modal.png" />
+
+            <aside class="notes">
+              - a o čem to tedy bude?
+              - o tom, co jsem se já jako vývojář naučil o vytváření design systémů
+              - tak jdeme na to
+            </aside>
+
+            ---
+
+            ## 🥖 Baked in Features
+
+            ---
+
+            ##  Forms
+
+            <pre class="r-stretch">
+              <code data-line-numbers="5,7,8">
+                <main>
+                  <button id="open">Open dialog</button>
+                  <dialog>
+                    <form method="dialog">
+                    <h1>Hello, would you like to do something cool?<h1/>
+                    <button id="close" value="cancel">Go to hell!</button>
+                    <button id="confirm" value="confirm">Let's go!</button>
+                  </dialog>
+                </main>
+            </code>
+            </pre>
+
+            ---
+
+            <pre class="r-stretch">
+              <code data-line-numbers="8,12,13">
+                const showButton = document.getElementById('showDialog');
+                const favDialog = document.getElementById('favDialog');
+                const outputBox = document.querySelector('output');
+
+                // "Show the dialog" button opens the <dialog> modally
+                showButton.addEventListener('click', () => {
+                    favDialog.showModal();
+                });
+
+                // "Confirm" button of form triggers "close" on dialog because of [method="dialog"]
+                favDialog.addEventListener('close', () => {
+                  outputBox.value = `ReturnValue: ${favDialog.returnValue}.`;
+                });
+              </code>
+            </pre>
+
+            ---
+
+            ## Native Backdrop pseudo-element
+
+            <pre>
+              <code data-trim>
+                .Modal::backdrop {
+                  background-color: #333333;
+                  visibility: visible;
+                  opacity: 1;
+                }
+              </code>
+            </pre>
+
+            ---
+
+            ## 🚪 Closing using Escape key
+
+            ✅
+
+            ---
+
+            ## 🤷 Something is missing
+
+            ---
+
+            ## 🚪 Closing using Backdrop
+
+            <img src="static/modal-dialog.png" />
+
+            ---
+
+            <img src="static/modal-content.png" />
+
+            ---
+
+            ## 🛠️ JS API
+
+            <code>.show()</code>
+
+            <code>.showModal()</code>
+            <pre>::backdrop</pre>
+
+            <code>.close()</code>
+            <pre>dialog.returnValue</pre>
+
+            ---
+
+            ### 📯 Events
+
+            <code>close</code>
+            <pre>dialog.returnValue</pre>
+
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event">https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event</a>
+
+            <code>cancel</code>
+
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/cancel_event">https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/cancel_event</a>
+
+            ---
+
+            <pre class="r-stretch">
+              <code data-line-numbers="16,17,21,22">
+                <script>
+                  (() => {
+                    const updateButton = document.getElementById("updateDetails");
+                    const closeButton = document.getElementById("close");
+                    const dialog = document.getElementById("favDialog");
+                    dialog.returnValue = "favAnimal";
+                    function openCheck(dialog) {
+                      if (dialog.open) {
+                        console.log("Dialog open");
+                      } else {
+                        console.log("Dialog closed");
+                      }
+                    }
+                    // Update button opens a modal dialog
+                    updateButton.addEventListener("click", () => {
+                      dialog.showModal();
+                      openCheck(dialog);
+                    });
+                    // Form close button closes the dialog box
+                    closeButton.addEventListener("click", () => {
+                      dialog.close("animalNotChosen");
+                      openCheck(dialog);
+                    });
+                  })();
+                </script>
+              </code>
+            </pre>
+
+            ---
+
+            ## ⚛️ React
+
+            ---
+
+            <pre class="r-stretch">
+              <code data-line-numbers="3,7,9,14,16,18,20,23">
+                function Modal({ children, open, onRequestClose }) {
+                  const dialogRef = React.useRef(null);
+                  React.useEffect(() => {
+                    const dialogNode = dialogRef.current;
+                    if (open) {
+                      dialogNode.showModal();
+                    } else {
+                      dialogNode.close();
+                    }
+                  }, [open])
+                  React.useEffect(() => {
+                    const dialogNode = dialogRef.current
+                    const handleCancel = (event) => {
+                      event.preventDefault();
+                      onRequestClose();
+                    }
+                    dialogNode.addEventListener('cancel', handleCancel);
+                    return () => {
+                      dialogNode.removeEventListener('cancel', handleCancel);
+                    }
+                  }, [onRequestClose]);
+                  return <dialog ref={dialogRef}>{children}</dialog>;
+                }
+              </code>
+            </pre>
+
+            ---
+
+            ### 🪝 And use hooks
+
+            <ul>
+              <li class="fragment">useDialog - Dialog state</li>
+              <li class="fragment">useOnClickOutside - Backdrop click</li>
+              <li class="fragment">useCancelEvent - Escape key</li>
+            </ul>
+            ---
+
+            <pre>
+              <code>
+                <script type="text/template">
+                  <Dialog
+                    isOpen={isOpen}
+                    onClose={onClose}
+                  >
+                    {children}
+                  </Dialog>
+              </script>
+              </code>
+            </pre>
+
+            ---
+
+            ## 🥡 Takeaways
+
+            ---
+
+            ### ➕ Advantages
+
+            <ul>
+            <li class="fragment">Minimal Javascript</li>
+            <li class="fragment">accesibility baked in</li>
+            <li class="fragment">::backdrop pseudo-element</li>
+            <li class="fragment">form method="dialog"</li>
+            <li class="fragment">Escape key closes the dialog</li>
+          </ul>
+
+            ---
+
+            ### ➖ Disadvantages
+
+            <ul>
+            <li class="fragment">fancy features require more JS</li>
+            <li class="fragment">clicking on backdrop does not close the dialog</li>
+            <li class="fragment">some accessibility issue regarding autofocus</li>
+            </ul>
+
+            ---
+
+            ### 🧑‍🦼 Accessibility
+
+            <img src="static/dialog-caniuse.png" />
+
+            <aside class="notes">
+              - jenže filip mluvil o analýzách a měření a dalších věcech
+              - tam my ještě nejsem
+              - my se pohybujeme v tom menším kruhu
+              - dokumentace, tooling a kód
+              - a o tom to dnes primárně bude
+            </aside>
+
+            ---
+
+            # 🤝 Credit
+
+            Adam Kudrna + Kateřina Dlouhá
+
+
+            CZ: <a href="https://frontend.garden/element-dialog-nevymyslej-znovu-modal">https://frontend.garden/element-dialog-nevymyslej-znovu-modal</a>
+
+            EN: <a href="https://deploy-preview-167--literat.netlify.app/blog/2023-04-11/dialog-element-don't-reinvent-the-wheel-with-modals!/">https://deploy-preview-167--literat.netlify.app/blog/2023-04-11/dialog-element-don't-reinvent-the-wheel-with-modals!/</a>
+
+            ---
+
+            # 👋
+
+            No robot (AI) were harmed while fabricating these slides and posts.
+
+            <a href="https://dialog-do-not-reinvent-modal.netlify.app/">https://dialog-do-not-reinvent-modal.netlify.app/</a>
+
+            <aside class="notes">
+              - děkuji za pozornost
+            </aside>
+
+            ---
+
+            <img src="static/spirit.png" />
+
+            <a href="https://github.com/lmc-eu/spirit-design-system">https://github.com/lmc-eu/spirit-design-system</a>
+
+          </textarea>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+        slideNumber: 'c/t'
+      });
+    </script>
+  </body>
 </html>
