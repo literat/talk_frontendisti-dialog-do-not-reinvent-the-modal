@@ -41,8 +41,12 @@
             <img src="static/twitter-modal.png" />
 
             <aside class="notes">
-              - než začnu, tak chci celou tuhle přednášku uvést do správného kontextu
-              - takže nejprve něco o mě
+              - dialogy jsou všude
+              - řeší interakci s uživatelem
+              - mají různá jména, modal, dailog, drawev, offcanvas, popup
+              - otázka do pléna: kdo už někdy implementoval modal
+              - a jaké jsou nějvětší potíže?
+              - ukážeme si jak si život zjednoduššit
             </aside>
 
             ---
@@ -52,11 +56,7 @@
             <a href="https://www.youtube.com/watch?v=rM1emdWTr5Q">https://www.youtube.com/watch?v=rM1emdWTr5Q</a>
 
             <aside class="notes">
-              - začínal jsem s PHP a javascriptem
-              - pracoval jsem s AWS a Serverless
-              - hrál jsem s Node.js a Reactem
-              - a teď vytvářím design systém, o kterém jsem ještě minulý rok nic nevěděl
-              - takže se tak trochu považuji za fullstackáře
+              - k použití nás motivovala přednáška od Tomáše Pustelníka
             </aside>
 
             ---
@@ -66,10 +66,9 @@
             <img src="static/modal-anatomy.png" />
 
             <aside class="notes">
-              - teď už trochu víc k tématu
-              - to, o čem tu budu mluvit není jenom moje práce
-              - je to práce celého týmu lidí
-              - možná některé poznáváte ;-)
+              - jak vypadá dnešní modal z pohledu designu a co umí
+              - interakce, tlačítka, zavírání
+              - zavírání na klik, escape, backdrop
             </aside>
 
             ---
@@ -87,9 +86,18 @@
               </code>
             </pre>
 
+            <aside class="notes">
+              - seznamte se, nový dialog element
+              - v základu nemá skoro žádné atributy
+            </aside>
+
             ---
 
             <img src="static/nonmodal-dialog.png" />
+
+            <aside class="notes">
+              - je v takzvaném nemodálním stavu
+            </aside>
 
             ---
 
@@ -98,12 +106,10 @@
             <img src="static/gmail-non-modal.png" />
 
             <aside class="notes">
-              - taky bych chtěl zmínit na úvod pár technikálií
-              - celý design system vytváříme jako open source
-              - a za pomoci aktuálního stacku technologií
-              - jako třeba Nx + Lerna (ano, máme monorepo)
-              - typescript + react
-              - php + twig (jo, máme komponenty pro PHP, ale o tom později)
+              - znamená to, že je povolená interakce se stránkou
+              - nejdříve jsem neznal moc použití, ale pak to začalo dávat smysl
+              - různé panely ve složitějších aplikacích alá figma a dalších
+              - zde ukázka z gmailu
             </aside>
 
             ---
@@ -113,14 +119,17 @@
             <img src="static/modal-modal.png" />
 
             <aside class="notes">
-              - a o čem to tedy bude?
-              - o tom, co jsem se já jako vývojář naučil o vytváření design systémů
-              - tak jdeme na to
+              - pak tu máme dialog v modální stavu
+              - interakce se zbytkem stránky je zakázaná
             </aside>
 
             ---
 
             ## 🥖 Baked in Features
+
+            <aside class="notes">
+              - co jsou teda ty skvělé věci, co nám ten element přináší?
+            </aside>
 
             ---
 
@@ -139,6 +148,11 @@
                 </main>
             </code>
             </pre>
+
+            <aside class="notes">
+              - form method dialog
+              - použití formulářů
+            </aside>
 
             ---
 
@@ -160,6 +174,10 @@
               </code>
             </pre>
 
+            <aside class="notes">
+              - jak získat návratovou hodnotu
+            </aside>
+
             ---
 
             ## Native Backdrop pseudo-element
@@ -174,15 +192,27 @@
               </code>
             </pre>
 
+            <aside class="notes">
+              - nativní podporu pro backdrop
+            </aside>
+
             ---
 
             ## 🚪 Closing using Escape key
 
             ✅
 
+            <aside class="notes">
+              - automatické zavírání přes escape klávesu
+            </aside>
+
             ---
 
             ## 🤷 Something is missing
+
+            <aside class="notes">
+              - ale něco nám stále chybí
+            </aside>
 
             ---
 
@@ -190,9 +220,18 @@
 
             <img src="static/modal-dialog.png" />
 
+            <aside class="notes">
+              - a to zavírání kliku na backdrop
+              - zde pozor na implementaci pro rozdílové oblasti
+            </aside>
+
             ---
 
             <img src="static/modal-content.png" />
+
+            <aside class="notes">
+              - dialog má celý top layer, je potřeba se zaměřit na vnitřek
+            </aside>
 
             ---
 
@@ -206,6 +245,11 @@
             <code>.close()</code>
             <pre>dialog.returnValue</pre>
 
+            <aside class="notes">
+              - teď už jenom zrekapitulujeme JS API
+              - ta první metoda otevírá nemodální stav
+            </aside>
+
             ---
 
             ### 📯 Events
@@ -218,6 +262,10 @@
             <code>cancel</code>
 
             <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/cancel_event">https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/cancel_event</a>
+
+            <aside class="notes">
+              - a události
+            </aside>
 
             ---
 
@@ -251,9 +299,17 @@
               </code>
             </pre>
 
+            <aside class="notes">
+              - zde je vidět, jak se na ně navěsit
+            </aside>
+
             ---
 
             ## ⚛️ React
+
+            <aside class="notes">
+              - a nesmíme zapomenout na React, kde nám tento element také hodně pomůže
+            </aside>
 
             ---
 
@@ -294,6 +350,11 @@
               <li class="fragment">useOnClickOutside - Backdrop click</li>
               <li class="fragment">useCancelEvent - Escape key</li>
             </ul>
+
+            <aside class="notes">
+              - celou implementaci lze krásně rozdělit do hooků
+            </aside>
+
             ---
 
             <pre>
@@ -309,9 +370,17 @@
               </code>
             </pre>
 
+            <aside class="notes">
+              - a pak už je to jedoduchá komponenta
+            </aside>
+
             ---
 
             ## 🥡 Takeaways
+
+            <aside class="notes">
+              - co si z toho teda odnést
+            </aside>
 
             ---
 
@@ -342,11 +411,7 @@
             <img src="static/dialog-caniuse.png" />
 
             <aside class="notes">
-              - jenže filip mluvil o analýzách a měření a dalších věcech
-              - tam my ještě nejsem
-              - my se pohybujeme v tom menším kruhu
-              - dokumentace, tooling a kód
-              - a o tom to dnes primárně bude
+              - již nyní se dá používat ve všech prohlížečích
             </aside>
 
             ---
@@ -359,6 +424,10 @@
             CZ: <a href="https://frontend.garden/element-dialog-nevymyslej-znovu-modal">https://frontend.garden/element-dialog-nevymyslej-znovu-modal</a>
 
             EN: <a href="https://literat.dev/blog/2023-04-11/dialog-element-don't-reinvent-the-wheel-with-modals!/">https://literat.dev/blog/2023-04-11/dialog-element-don't-reinvent-the-wheel-with-modals!/</a>
+
+            <aside class="notes">
+              - a chci poděkovat za spolupráci na článcích
+            </aside>
 
             ---
 
